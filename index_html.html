@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matkakassa - Chile & Brasilia 🎒✈️</title>
+    <!-- Tuodaan tyylikkäät fontit ja ikonikirjasto -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* --- DESIGN-MUUTTUJAT JA TEEMA (Kevyt Keltainen & Minimalistinen) --- */
+        :root {
+            --bg-color: #FFFDEE;          /* Erittäin pehmeä, lämmin keltaiseen taittava tausta */
+            --card-bg: #FFFDF5;           /* Hieman kirkkaampi lämmin sävy korteille */
+            --border-color: #FEF3C7;      /* Kevyt kullankeltainen reunoille */
+            --text-main: #2D3748;         /* Tyylikäs hiilenharmaa teksteille */
+            --text-muted: #718096;        /* Neutraali harmaa lisätiedoille */
+            --accent-color: #D97706;      /* Lämmin meripihka/oranssi korostuksille */
+            --accent-success: #10B981;    /* Rauhoittava vihreä saavutetuille etapeille */
+            --font-head: 'Poppins', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f7f6f0; /* Alustava pohjaväri selaimelle */
+            background-image: radial-gradient(circle at 100% 0%, #FFFDEE 0%, #F5F3E7 100%);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            padding: 30px 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- PÄÄKONTTAINER --- */
+        .app-container {
+            max-width: 1100px;
+            width: 100%;
+            background-color: var(--bg-color);
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(139, 92, 26, 0.08);
+            border: 1px solid var(--border-color);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* --- HEADEROSIO --- */
+        .header {
+            text-align: center;
+            border-bottom: 2px dashed var(--border-color);
+            padding-bottom: 25px;
+        }
+
+        .header h1 {
+            font-family: var(--font-head);
+            font-size: 36px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 18px;
+        }
+
+        /* --- DASHBOARD JA REPPULASOUT --- */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 900px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* --- VASEN PUOLI: TUNTIEN SYÖTTÖ JA EDISTYMINEN --- */
+        .dashboard-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Saldo-kortti */
+        .status-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.01);
+        }
+
+        .status-card .money-amount {
+            font-family: var(--font-head);
+            font-size: 54px;
+            font-weight: 700;
+            color: var(--accent-color);
+            line-height: 1.1;
+            margin-bottom: 5px;
+        }
+
+        .status-card .hours-amount {
+            font-size: 18px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Edistymispalkki */
+        .progress-section {
+            margin-top: 15px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .progress-bar-bg {
+            background-color: #E2E8F0;
+            height: 18px;
+            border-radius: 9px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--accent-color), #F59E0B);
+            height: 100%;
+            width: 0%;
+            border-radius: 9px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Vuoron lisäysosio */
+        .action-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .action-card h3 {
+            font-family: var(--font-head);
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+
+        /* Pikalinkit työtunneille */
+        .quick-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .btn-quick {
+            background-color: #FFF;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 12px;
+            font-family: var(--font-body);
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-quick:hover {
+            border-color: var(--accent-color);
+            background-color: #FFFDF0;
+            transform: translateY(-2px);
+        }
+
+        .btn-quick i {
+            margin-right: 5px;
+            color: var(--accent-color);
+        }
+
+        /* Manuaalinen lisäys */
+        .manual-input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-hours {
+            flex-grow: 1;
+            padding: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            font-family: var(--font-body);
+            outline: none;
+            background-color: #FFF;
+        }
+
+        .input-hours:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+        }
+
+        .btn-add {
+            background-color: var(--accent-color);
+            color: #FFF;
+            border: none;
+            padding: 0 25px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: var(--font-head);
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-add:hover {
+            background-color: #B45309;
+        }
+
+        /* --- OIKEA PUOLI: REPUT JA ETAPIT --- */
+        .backpack-panel {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.01);
+        }
+
+        .backpack-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .backpack-header h2 {
+            font-family: var(--font-head);
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        /* Etappilistaus (Tavarat reppuun) */
+        .milestone-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .milestone-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            border-radius: 12px;
+            background-color: #FFF;
+            border: 1px solid #F1F5F9;
+            transition: all 0.3s ease;
+        }
+
+        /* Saavutetun etapin tyyli */
+        .milestone-item.unlocked {
+            border-color: #A7F3D0;
+            background-color: #ECFDF5;
+        }
+
+        .milestone-item.unlocked .item-icon {
+            background-color: var(--accent-success);
+            color: #FFF;
+        }
+
+        .milestone-item.unlocked .item-name {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .milestone-item.unlocked .item-price {
+            background-color: #D1FAE5;
+            color: #065F46;
+        }
+
+        /* Lukitun etapin tyyli */
+        .milestone-item.locked {
+            opacity: 0.65;
+        }
+
+        .milestone-item.locked .item-icon {
+            background-color: #E2E8F0;
+            color: #94A3B8;
+        }
+
+        .milestone-item.locked .item-name {
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+
+        .milestone-item.locked .item-price {
+            background-color: #F1F5F9;
+            color: #64748B;
+        }
+
+        /* Etapin sisäiset osat */
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .item-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .item-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item-name {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .item-status-text {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .item-price {
+            font-family: var(--font-head);
+            font-size: 14px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        /* --- ALALUOKKA: VUOROHISTORIA --- */
+        .history-panel {
+            border-top: 1px solid var(--border-color);
+            padding-top: 25px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .history-header h3 {
+            font-family: var(--font-head);
+            font-size: 18px;
+            color: var(--text-main);
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .history-item span {
+            font-weight: 500;
+        }
+
+        .history-item .btn-delete {
+            background: none;
+            border: none;
+            color: #EF4444;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .history-item .btn-delete:hover {
+            background-color: #FEE2E2;
+        }
+
+        .no-history {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            padding: 15px;
+            background-color: var(--card-bg);
+            border: 1px dashed var(--border-color);
+            border-radius: 10px;
+        }
+
+        /* --- APU- JA NOLLAUSNAPIT --- */
+        .footer-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .btn-reset {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: underline;
+            transition: color 0.2s;
+        }
+
+        .btn-reset:hover {
+            color: #EF4444;
+        }
+
+        .target-hint {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Muokataan skrollauspalkkia hieman nätimmäksi */
+        .history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .history-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 3px;
+        }
+        .history-list::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <!-- HEADER -->
+    <div class="header">
+        <h1>🎒 Matkakassa</h1>
+        <p>Työvuorot matkaksi Chileen ja Brasiliaan</p>
+    </div>
+
+    <!-- MAIN INTERACTIVE LAYOUT -->
+    <div class="main-layout">
+        
+        <!-- VASEN PANEL: Edistyminen ja kirjaus -->
+        <div class="dashboard-panel">
+            
+            <!-- Tilanne ja kokonaissaldo -->
+            <div class="status-card">
+                <div class="money-amount" id="totalMoney">0.00 €</div>
+                <div class="hours-amount" id="totalHours">Tehdyt työtunnit: 0 h</div>
+                
+                <!-- Edistymispalkki matkalla rannalle -->
+                <div class="progress-section">
+                    <div class="progress-label">
+                        <span>Lentolippuun & seikkailuun</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="progressBar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tuntien lisäys -->
+            <div class="action-card">
+                <h3>Kirjaa tehty vuoro ✨</h3>
+                
+                <!-- Pikanapit nopeaan kirjaamiseen -->
+                <div class="quick-buttons">
+                    <button class="btn-quick" onclick="addQuickShift(4)">
+                        <i class="fa-solid fa-clock"></i> +4h (Puoli)
+                    </button>
+                    <button class="btn-quick" onclick="addQuickShift(8)">
+                        <i class="fa-solid fa-briefcase"></i> +8h (Perus)
+                    </button>
+                    <button class="btn-quick" onclick="addQuickShift(10)">
+                        <i class="fa-solid fa-fire"></i> +10h (Pitkä)
+                    </button>
+                </div>
+                
+                <!-- Manuaalinen tuntisyöttö -->
+                <div class="manual-input-row">
+                    <input type="number" id="manualHours" class="input-hours" placeholder="Syötä tunnit" min="0.5" max="24" step="0.5">
+                    <button class="btn-add" onclick="addManualShift()">
+                        Lisää <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- OIKEA PANEL: Reppu ja Etapit -->
+        <div class="backpack-panel">
+            <div class="backpack-header">
+                <span style="font-size: 28px;">🎒</span>
+                <div>
+                    <h2 style="color: var(--text-main);">Sinun reppusi</h2>
+                    <p style="font-size: 13px; color: var(--text-muted);">Tavarat pakkaantuvat mukaan sitä mukaa, kun tunnit kertyvät!</p>
+                </div>
+            </div>
+
+            <!-- Dynaamisesti täyttyvä etappilista (Reppu) -->
+            <div class="milestone-list" id="milestoneList">
+                <!-- Etapit generoidaan Javascriptillä -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ALALAIKKALAT: HISTORIA JA ASETUKSET -->
+    <div class="history-panel">
+        <div class="history-header">
+            <h3>Tallennetut vuorot</h3>
+            <span class="target-hint">Tuntipalkka: 15.00 € / h (käteen)</span>
+        </div>
+        
+        <div class="history-list" id="historyList">
+            <!-- Vuororivit generoidaan Javascriptillä -->
+        </div>
+
+        <div class="footer-actions">
+            <button class="btn-reset" onclick="resetAllData()">Nollaa sovelluksen tiedot</button>
+            <span class="target-hint" style="font-style: italic;">Matkakassan kokonaistavoite: 2205.00 € (147 h)</span>
+        </div>
+    </div>
+
+</div>
+
+<!-- SOVELLUKSEN LOGIIKKA (Tallennus, laskenta ja käyttöliittymä) -->
+<script>
+    // --- VAKIOT JA ETAPPIASETUKSET ---
+    const HOURLY_WAGE = 15;        // Tuntipalkka euroissa
+    const TOTAL_TARGET_BUDGET = 2205; // Kokonaistavoite (147 tuntia * 15€ = 2205€)
+
+    // Lista etapeista ja repun sisällöstä
+    const milestones = [
+        { id: 1, hours: 3, price: 45, name: "Katuruokaa & Empanadoja", emoji: "🥟", desc: "Herkutteluun heti laskeuduttua!" },
+        { id: 2, hours: 6, price: 90, name: "Viininmaistelu Chilessä", emoji: "🍷", desc: "Upea iltapäivä Santiago de Chilessä" },
+        { id: 3, hours: 8, price: 120, name: "Patagonian lentolippu", emoji: "✈️🏔️", desc: "Chilen sisäiset lennot vuoristoon" },
+        { id: 4, hours: 10, price: 150, name: "Ilha Grande -saariretki", emoji: "🏝️", desc: "Paratiisisaari Brasilian rannikolla" },
+        { id: 5, hours: 40, price: 600, name: "Laadukkaat rantamajoitukset", emoji: "🏖️", desc: "Yöt aaltojen kohinan äärellä" },
+        { id: 6, hours: 80, price: 1200, name: "Menopaluu lennot Atlantin yli", emoji: "🌎✈️", desc: "Matka maapallon toiselle puolelle!" }
+    ];
+
+    // --- SOVELLUSTILA (Ladataan selaimen muistista) ---
+    let shifts = JSON.parse(localStorage.getItem('matkakassa_shifts')) || [];
+
+    // --- LOGIIKKA JA APUFUNKTIOT ---
+
+    // Lasketaan kaikki tunnit yhteen tehdyistä vuoroista
+    function calculateTotalHours() {
+        return shifts.reduce((total, shift) => total + shift.hours, 0);
+    }
+
+    // Päivittää koko käyttöliittymän vastaamaan nykyistä tilaa
+    function updateAppUI() {
+        const totalHours = calculateTotalHours();
+        const totalMoney = totalHours * HOURLY_WAGE;
+
+        // 1. Päivitetään päänumerot
+        document.getElementById('totalMoney').innerText = `${totalMoney.toFixed(2)} €`;
+        document.getElementById('totalHours').innerText = `Tehdyt työtunnit: ${totalHours} h`;
+
+        // 2. Päivitetään edistymispalkki
+        const progressPercent = Math.min(Math.round((totalMoney / TOTAL_TARGET_BUDGET) * 100), 100);
+        document.getElementById('progressBar').style.width = `${progressPercent}%`;
+        document.getElementById('progressPercent').innerText = `${progressPercent}%`;
+
+        // 3. Päivitetään reppu ja etapit
+        const milestoneListContainer = document.getElementById('milestoneList');
+        milestoneListContainer.innerHTML = '';
+
+        milestones.forEach(m => {
+            const isUnlocked = totalHours >= m.hours;
+            const itemElement = document.createElement('div');
+            itemElement.className = `milestone-item ${isUnlocked ? 'unlocked' : 'locked'}`;
+
+            if (isUnlocked) {
+                // Etappi saavutettu (pakattu reppuun)
+                itemElement.innerHTML = `
+                    <div class="item-info">
+                        <div class="item-icon">${m.emoji}</div>
+                        <div class="item-text">
+                            <span class="item-name">${m.name}</span>
+                            <span class="item-status-text" style="color: var(--accent-success); font-weight: 500;">
+                                <i class="fa-solid fa-circle-check"></i> Pakattu reppuun!
+                            </span>
+                        </div>
+                    </div>
+                    <span class="item-price">${m.price} €</span>
+                `;
+            } else {
+                // Etappi lukittu (vaatii vielä työtä)
+                const hoursRemaining = m.hours - totalHours;
+                const moneyRemaining = m.price - totalMoney;
+                itemElement.innerHTML = `
+                    <div class="item-info">
+                        <div class="item-icon">${m.emoji}</div>
+                        <div class="item-text">
+                            <span class="item-name">${m.name}</span>
+                            <span class="item-status-text">
+                                Tarvitaan vielä: <strong>${hoursRemaining.toFixed(1)} h</strong> (vastaa ${moneyRemaining.toFixed(0)}€)
+                            </span>
+                        </div>
+                    </div>
+                    <span class="item-price">${m.price} €</span>
+                `;
+            }
+            milestoneListContainer.appendChild(itemElement);
+        });
+
+        // 4. Päivitetään vuorohistoria
+        const historyListContainer = document.getElementById('historyList');
+        historyListContainer.innerHTML = '';
+
+        if (shifts.length === 0) {
+            historyListContainer.innerHTML = `
+                <div class="no-history">
+                    Ei vielä kirjattuja vuoroja. Aloita lisäämällä ensimmäinen vuorosi ylhäältä!
+                </div>
+            `;
+        } else {
+            // Näytetään vuorot siten, että uusin on ylimpänä
+            [...shifts].reverse().forEach(shift => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.innerHTML = `
+                    <div>
+                        <span style="color: var(--accent-color); font-weight: 600;">+${shift.hours} h</span>
+                        <span style="color: var(--text-muted); font-size: 12px; margin-left: 10px;">(${shift.date})</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span style="font-weight: 600;">+${shift.earned.toFixed(2)} €</span>
+                        <button class="btn-delete" onclick="deleteShift('${shift.id}')" title="Poista tämä vuoro">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `;
+                historyListContainer.appendChild(historyItem);
+            });
+        }
+    }
+
+    // --- VUOROJEN KÄSITTELY ---
+
+    // Lisää uuden vuoron ja tallentaa sen
+    function registerShift(hours) {
+        if (isNaN(hours) || hours <= 0) {
+            alert("Syötä kelvollinen tuntimäärä (esim. 8 tai 4.5)!");
+            return;
+        }
+
+        const dateNow = new Date();
+        const formattedDate = `${dateNow.getDate()}.${dateNow.getMonth() + 1}.${dateNow.getFullYear()} klo ${String(dateNow.getHours()).padStart(2, '0')}:${String(dateNow.getMinutes()).padStart(2, '0')}`;
+        
+        const newShift = {
+            id: '_' + Math.random().toString(36).substr(2, 9), // Uniikki ID poistamista varten
+            date: formattedDate,
+            hours: hours,
+            earned: hours * HOURLY_WAGE
+        };
+
+        shifts.push(newShift);
+        saveToLocalStorage();
+        updateAppUI();
+    }
+
+    // Pikalinkkien napautus
+    function addQuickShift(hours) {
+        registerShift(hours);
+    }
+
+    // Manuaalinen syöttö
+    function addManualShift() {
+        const inputField = document.getElementById('manualHours');
+        const hours = parseFloat(inputField.value);
+        registerShift(hours);
+        inputField.value = ''; // Tyhjennetään kenttä lisäyksen jälkeen
+    }
+
+    // Yksittäisen vuoron poistaminen
+    function deleteShift(id) {
+        if (confirm("Haluatko varmasti poistaa tämän kirjatun vuoron?")) {
+            shifts = shifts.filter(shift => shift.id !== id);
+            saveToLocalStorage();
+            updateAppUI();
+        }
+    }
+
+    // Tallennus selaimen muistiin
+    function saveToLocalStorage() {
+        localStorage.setItem('matkakassa_shifts', JSON.stringify(shifts));
+    }
+
+    // Koko sovelluksen nollaus
+    function resetAllData() {
+        if (confirm("Haluatko varmasti nollata KAIKKI työtunnit ja aloittaa alusta? Tätä toimintoa ei voi peruuttaa.")) {
+            shifts = [];
+            saveToLocalStorage();
+            updateAppUI();
+        }
+    }
+
+    // Alustetaan sivu kun se avataan ensimmäisen kerran
+    updateAppUI();
+</script>
+
+</body>
+</html>
